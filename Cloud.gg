@@ -182,7 +182,49 @@
                 {
                     "name": "output",
                     "type": "Texture",
+                    "access": "UAV",
+                    "buffer": {
+                        "typeStruct": {
+                            "name": "VoxelCloud"
+                        }
+                    }
+                },
+                {
+                    "name": "voxelWorld",
+                    "type": "Buffer",
+                    "access": "SRV",
+                    "buffer": {
+                        "typeStruct": {
+                            "name": "VoxelCloud"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "VoxelWorldInitialize",
+            "fileName": "Shaders\\Cloud_VoxelWorldInitialize.hlsl",
+            "entryPoint": "csmain",
+            "resources": [
+                {
+                    "name": "voxelWorld",
+                    "type": "Buffer",
                     "access": "UAV"
+                }
+            ]
+        }
+    ],
+    "structs": [
+        {
+            "name": "VoxelCloud",
+            "fields": [
+                {
+                    "name": "pos",
+                    "type": "Int3"
+                },
+                {
+                    "name": "density",
+                    "type": "Float"
                 }
             ]
         }
@@ -198,10 +240,11 @@
             "actionComputeShader": {
                 "name": "Path",
                 "editorPos": [
-                    8357.0,
-                    14597.0
+                    8415.0,
+                    14594.0
                 ],
                 "linkProperties": [
+                    {},
                     {},
                     {}
                 ],
@@ -210,6 +253,11 @@
                         "srcPin": "output",
                         "dstNode": "Output",
                         "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "voxelWorld",
+                        "dstNode": "VoxelWorldInitialize",
+                        "dstPin": "voxelWorld"
                     }
                 ],
                 "shader": {
@@ -237,6 +285,38 @@
                     "node": {
                         "name": "Output"
                     }
+                }
+            }
+        },
+        {
+            "resourceBuffer": {
+                "name": "Node 1",
+                "editorPos": [
+                    8005.0,
+                    14693.0
+                ]
+            }
+        },
+        {
+            "actionComputeShader": {
+                "name": "VoxelWorldInitialize",
+                "editorPos": [
+                    8149.0,
+                    14677.0
+                ],
+                "linkProperties": [
+                    {},
+                    {}
+                ],
+                "connections": [
+                    {
+                        "srcPin": "voxelWorld",
+                        "dstNode": "Node 1",
+                        "dstPin": "resource"
+                    }
+                ],
+                "shader": {
+                    "name": "VoxelWorldInitialize"
                 }
             }
         }
