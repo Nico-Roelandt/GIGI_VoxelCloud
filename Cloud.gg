@@ -184,9 +184,7 @@
                     "type": "Texture",
                     "access": "UAV",
                     "buffer": {
-                        "typeStruct": {
-                            "name": "VoxelCloud"
-                        }
+                        "PODAsStructuredBuffer": false
                     }
                 },
                 {
@@ -225,19 +223,13 @@
             "fields": [
                 {
                     "name": "pos",
-                    "type": "Int3"
+                    "type": "Float3"
                 },
                 {
                     "name": "density",
                     "type": "Float"
                 }
             ]
-        }
-    ],
-    "fileCopies": [
-        {
-            "fileName": "PersoShaders\\Cloud_common.hlsl",
-            "type": "Shader"
         }
     ],
     "nodes": [
@@ -285,21 +277,21 @@
                     8181.0,
                     14597.0
                 ],
-                "visibility": "Exported",
-                "format": {
-                    "node": {
-                        "name": "Output"
-                    }
-                }
+                "visibility": "Imported"
             }
         },
         {
             "resourceBuffer": {
-                "name": "Node 1",
+                "name": "voxelWorld",
                 "editorPos": [
-                    8005.0,
-                    14693.0
-                ]
+                    7997.0,
+                    14677.0
+                ],
+                "format": {
+                    "structureType": {
+                        "name": "VoxelCloud"
+                    }
+                }
             }
         },
         {
@@ -316,7 +308,7 @@
                 "connections": [
                     {
                         "srcPin": "voxelWorld",
-                        "dstNode": "Node 1",
+                        "dstNode": "voxelWorld",
                         "dstPin": "resource"
                     }
                 ],

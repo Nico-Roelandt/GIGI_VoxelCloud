@@ -27,24 +27,6 @@ int LinearIndex(int x, int y, int z) {
     return x + y * numberOfVoxelX + z * numberOfVoxelX * numberOfVoxelY;
 }
 
-// Initialisation des voxels dans le monde
-void InitiateWorldCloudVoxel(uint rngState)
-{
-    for (int x = 0; x < numberOfVoxelX; ++x)
-    {
-        for (int y = 0; y < numberOfVoxelY; ++y)
-        { 
-            for (int z = 0; z < numberOfVoxelZ; ++z)
-            {
-                VoxelCloud voxel;
-                voxel.pos = float3(x, y, z);
-                voxel.density = RandomFloat01(rngState);
-                arrayVoxelWorld[LinearIndex(x, y, z)] = voxel;
-            }
-        }
-    }
-}
-
 // Fonction de ray marching
 float3 RayMarch(float3 rayOrigin, float3 rayDirection)
 {
@@ -59,7 +41,7 @@ float3 RayMarch(float3 rayOrigin, float3 rayDirection)
 
         if (ix >= 0 && ix < numberOfVoxelX && iy >= 0 && iy < numberOfVoxelY && iz >= 0 && iz < numberOfVoxelZ)
         {
-            acculumatedDensity += arrayVoxelWorld[LinearIndex(ix, iy, iz)].density;
+            acculumatedDensity += voxelWorld[LinearIndex(ix, iy, iz)].density;
         }
 
         if (acculumatedDensity > 1.0f)
@@ -95,9 +77,6 @@ float3 RayMarch(float3 rayOrigin, float3 rayDirection)
         rayOrigin = /*$(Variable:CameraPos)*/;
         rayDirection = normalize(world.xyz - rayOrigin);
     }
-
-    // Initialisation des voxels
-    InitiateWorldCloudVoxel(rngState);
 
     // Calcul de la couleur via ray marching
     float3 color = RayMarch(rayOrigin, rayDirection);
