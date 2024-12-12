@@ -29,7 +29,8 @@
         {
             "name": "iResolution",
             "type": "Float3",
-            "dflt": "0.0f, 0.0f, 0.0f"
+            "dflt": "0.0f, 0.0f, 0.0f",
+            "visibility": "Host"
         },
         {
             "name": "iTime",
@@ -110,67 +111,17 @@
             "visibility": "User"
         },
         {
-            "name": "exposure",
-            "comment": "in FStops. -inf to +inf.",
-            "type": "Float",
-            "dflt": "0.0f",
-            "visibility": "User"
-        },
-        {
-            "name": "apertureRadius",
-            "comment": "in world units. 0 for pinhole camera.",
-            "type": "Float",
-            "dflt": "0.4f",
-            "visibility": "User"
-        },
-        {
-            "name": "focalPlaneDistance",
-            "comment": "in world units. How far from the camera things are in focus at.",
-            "type": "Float",
-            "dflt": "80.0f",
-            "visibility": "User"
-        },
-        {
-            "name": "maxVoxelCross",
-            "type": "Int",
-            "dflt": "256",
-            "visibility": "User"
-        },
-        {
             "name": "stepDistance",
             "type": "Float",
             "dflt": "0.1f",
             "visibility": "User"
         },
         {
-            "name": "ACESToneMapping",
-            "type": "Bool",
-            "dflt": "true",
-            "visibility": "User"
-        },
-        {
-            "name": "sRGB",
-            "type": "Bool",
-            "dflt": "true",
-            "visibility": "User"
-        },
-        {
-            "name": "numberOfVoxelX",
-            "type": "Int",
-            "dflt": "1000",
-            "visibility": "User"
-        },
-        {
-            "name": "numberOfVoxelY",
-            "type": "Int",
-            "dflt": "1000",
-            "visibility": "User"
-        },
-        {
-            "name": "numberOfVoxelZ",
-            "type": "Int",
-            "dflt": "1000",
-            "visibility": "User"
+            "name": "c_sizeOfWorld",
+            "type": "Int3",
+            "Const": true,
+            "Static": true,
+            "dflt": "100, 100, 100"
         }
     ],
     "shaders": [
@@ -188,13 +139,11 @@
                     }
                 },
                 {
-                    "name": "voxelWorld",
-                    "type": "Buffer",
+                    "name": "world",
+                    "type": "Texture",
                     "access": "SRV",
-                    "buffer": {
-                        "typeStruct": {
-                            "name": "VoxelCloud"
-                        }
+                    "texture": {
+                        "dimension": "Texture3D"
                     }
                 }
             ]
@@ -205,29 +154,12 @@
             "entryPoint": "csmain",
             "resources": [
                 {
-                    "name": "voxelWorld",
-                    "type": "Buffer",
+                    "name": "world",
+                    "type": "Texture",
                     "access": "UAV",
-                    "buffer": {
-                        "typeStruct": {
-                            "name": "VoxelCloud"
-                        }
+                    "texture": {
+                        "dimension": "Texture3D"
                     }
-                }
-            ]
-        }
-    ],
-    "structs": [
-        {
-            "name": "VoxelCloud",
-            "fields": [
-                {
-                    "name": "pos",
-                    "type": "Float3"
-                },
-                {
-                    "name": "density",
-                    "type": "Float"
                 }
             ]
         }
@@ -252,9 +184,9 @@
                         "dstPin": "resource"
                     },
                     {
-                        "srcPin": "voxelWorld",
+                        "srcPin": "world",
                         "dstNode": "VoxelWorldInitialize",
-                        "dstPin": "voxelWorld"
+                        "dstPin": "world"
                     }
                 ],
                 "shader": {
@@ -276,30 +208,15 @@
                 "editorPos": [
                     8181.0,
                     14597.0
-                ],
-                "visibility": "Imported"
-            }
-        },
-        {
-            "resourceBuffer": {
-                "name": "voxelWorld",
-                "editorPos": [
-                    7997.0,
-                    14677.0
-                ],
-                "format": {
-                    "structureType": {
-                        "name": "VoxelCloud"
-                    }
-                }
+                ]
             }
         },
         {
             "actionComputeShader": {
                 "name": "VoxelWorldInitialize",
                 "editorPos": [
-                    8149.0,
-                    14677.0
+                    8165.0,
+                    14674.0
                 ],
                 "linkProperties": [
                     {},
@@ -307,14 +224,31 @@
                 ],
                 "connections": [
                     {
-                        "srcPin": "voxelWorld",
-                        "dstNode": "voxelWorld",
+                        "srcPin": "world",
+                        "dstNode": "World",
                         "dstPin": "resource"
                     }
                 ],
                 "shader": {
                     "name": "VoxelWorldInitialize"
                 }
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "World",
+                "editorPos": [
+                    7973.0,
+                    14629.0
+                ],
+                "transient": false,
+                "visibility": "Imported",
+                "size": {
+                    "variable": {
+                        "name": "c_sizeOfWorld"
+                    }
+                },
+                "dimension": "Texture3D"
             }
         }
     ]

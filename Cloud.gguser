@@ -1,19 +1,14 @@
 {
     "version": "2.0",
     "snapshot": {
-        "resourceViewType": 5,
-        "resourceViewNodeIndex": 1,
-        "resourceViewResourceIndex": 0,
+        "resourceViewNodeIndex": 2,
+        "resourceViewResourceIndex": 1,
         "importedResources": [
             {
-                "nodeName": "Output",
+                "nodeName": "World",
                 "resetEveryFrame": false,
                 "texture": {
-                    "size": [
-                        1024,
-                        720,
-                        1
-                    ]
+                    "fileName": "voxel_cloud.dds"
                 }
             }
         ],
@@ -23,44 +18,8 @@
                 "value": "false"
             },
             {
-                "name": "exposure",
-                "value": "0.000000"
-            },
-            {
-                "name": "apertureRadius",
-                "value": "0.400000"
-            },
-            {
-                "name": "focalPlaneDistance",
-                "value": "80.000000"
-            },
-            {
-                "name": "maxVoxelCross",
-                "value": "256"
-            },
-            {
                 "name": "stepDistance",
                 "value": "0.100000"
-            },
-            {
-                "name": "ACESToneMapping",
-                "value": "true"
-            },
-            {
-                "name": "sRGB",
-                "value": "true"
-            },
-            {
-                "name": "numberOfVoxelX",
-                "value": "1000"
-            },
-            {
-                "name": "numberOfVoxelY",
-                "value": "1000"
-            },
-            {
-                "name": "numberOfVoxelZ",
-                "value": "1000"
             }
         ]
     }

@@ -1,11 +1,6 @@
 // Unnamed technique, shader PathTrace
 /*$(ShaderResources)*/
 
-// Dimensions du monde voxel
-static const int numberOfVoxelX = 100;
-static const int numberOfVoxelY = 100;
-static const int numberOfVoxelZ = 100;
-
 // Fonction de hachage pour le RNG
 uint wang_hash(inout uint seed)
 {
@@ -22,35 +17,26 @@ float RandomFloat01(inout uint state)
     return float(wang_hash(state)) / 4294967296.0;
 }
 
-// Calcul d’un index linéaire dans un tableau 3D
-int LinearIndex(int x, int y, int z) {
-    return x + y * numberOfVoxelX + z * numberOfVoxelX * numberOfVoxelY;
-}
 
 // Fonction de ray marching
 float3 RayMarch(float3 rayOrigin, float3 rayDirection)
 {
-    float3 currentPos = rayOrigin;
-    float acculumatedDensity = 0.0f;
-    for (int itOfVoxelCross = 0; itOfVoxelCross < /*$(Variable:maxVoxelCross)*/; ++itOfVoxelCross)
+    float3 color = float3(0.0f, 0.0f, 0.0f);
+    float t = 0.0f;
+    for (int i = 0; i < 64; i++)
     {
-        currentPos += rayDirection * /*$(Variable:stepDistance)*/;
-        int ix = int(currentPos.x);
-        int iy = int(currentPos.y);
-        int iz = int(currentPos.z);
-
-        if (ix >= 0 && ix < numberOfVoxelX && iy >= 0 && iy < numberOfVoxelY && iz >= 0 && iz < numberOfVoxelZ)
+        float3 p = rayOrigin + rayDirection * t;
+        float d = length(p) - 1.0f;
+        if (d < 0.001f)
         {
-            acculumatedDensity += voxelWorld[LinearIndex(ix, iy, iz)].density;
+            color = float3(1.0f, 0.0f, 0.0f);
+            break;
         }
-
-        if (acculumatedDensity > 1.0f)
-        {
-            return float3(0.0f, 0.0f, 0.0f);
-        }
+        t += d;
     }
-    return float3(1.0f, 1.0f, 1.0f); // Couleur par défaut si aucune intersection dense
+    return color;
 }
+
 
 // Point d'entrée du shader
 /*$(_compute:csmain)*/(uint3 DTid : SV_DispatchThreadID)
