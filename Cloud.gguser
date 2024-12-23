@@ -1,14 +1,21 @@
 {
     "version": "2.0",
     "snapshot": {
-        "resourceViewNodeIndex": 2,
+        "resourceViewType": 4,
+        "resourceViewNodeIndex": 3,
         "resourceViewResourceIndex": 1,
         "importedResources": [
             {
                 "nodeName": "World",
-                "resetEveryFrame": false,
                 "texture": {
-                    "fileName": "voxel_cloud.dds"
+                    "fileName": "",
+                    "fileIsSRGB": false,
+                    "format": "BC7_Unorm",
+                    "binaryDims": [
+                        0,
+                        0,
+                        0
+                    ]
                 }
             }
         ],

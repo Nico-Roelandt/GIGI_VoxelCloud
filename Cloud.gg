@@ -122,6 +122,54 @@
             "Const": true,
             "Static": true,
             "dflt": "100, 100, 100"
+        },
+        {
+            "name": "JitteredProjMtx",
+            "type": "Float4x4",
+            "dflt": "1.0f, 0.0f, 0.0f, 0.0f,   0.0f, 1.0f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f, 0.0f,   0.0f, 0.0f, 0.0f, 1.0f",
+            "visibility": "Host"
+        },
+        {
+            "name": "InvJitteredProjMtx",
+            "type": "Float4x4",
+            "dflt": "1.0f, 0.0f, 0.0f, 0.0f,   0.0f, 1.0f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f, 0.0f,   0.0f, 0.0f, 0.0f, 1.0f",
+            "visibility": "Host"
+        },
+        {
+            "name": "JitteredViewProjMtx",
+            "type": "Float4x4",
+            "dflt": "1.0f, 0.0f, 0.0f, 0.0f,   0.0f, 1.0f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f, 0.0f,   0.0f, 0.0f, 0.0f, 1.0f",
+            "visibility": "Host"
+        },
+        {
+            "name": "InvJitteredViewProjMtx",
+            "type": "Float4x4",
+            "dflt": "1.0f, 0.0f, 0.0f, 0.0f,   0.0f, 1.0f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f, 0.0f,   0.0f, 0.0f, 0.0f, 1.0f",
+            "visibility": "Host"
+        },
+        {
+            "name": "CameraAltitudeAzimuth",
+            "type": "Float2",
+            "dflt": "0.0f, 0.0f",
+            "visibility": "Host"
+        },
+        {
+            "name": "CameraJitter",
+            "type": "Float2",
+            "dflt": "0.5f, 0.5f",
+            "visibility": "Host"
+        },
+        {
+            "name": "ShadingRateImageTileSize",
+            "type": "Uint",
+            "dflt": "16",
+            "visibility": "Host"
+        },
+        {
+            "name": "WindowSize",
+            "type": "Float2",
+            "dflt": "1.0f, 1.0f",
+            "visibility": "Host"
         }
     ],
     "shaders": [
@@ -146,20 +194,12 @@
                         "dimension": "Texture3D"
                     }
                 }
-            ]
-        },
-        {
-            "name": "VoxelWorldInitialize",
-            "fileName": "Shaders\\Cloud_VoxelWorldInitialize.hlsl",
-            "entryPoint": "csmain",
-            "resources": [
+            ],
+            "samplers": [
                 {
-                    "name": "world",
-                    "type": "Texture",
-                    "access": "UAV",
-                    "texture": {
-                        "dimension": "Texture3D"
-                    }
+                    "name": "samplerLinear",
+                    "filter": "MinMagLinear_MipPoint",
+                    "addressMode": "Clamp"
                 }
             ]
         }
@@ -169,7 +209,7 @@
             "actionComputeShader": {
                 "name": "Path",
                 "editorPos": [
-                    8415.0,
+                    8411.0,
                     14594.0
                 ],
                 "linkProperties": [
@@ -185,8 +225,8 @@
                     },
                     {
                         "srcPin": "world",
-                        "dstNode": "VoxelWorldInitialize",
-                        "dstPin": "world"
+                        "dstNode": "World",
+                        "dstPin": "resource"
                     }
                 ],
                 "shader": {
@@ -206,31 +246,19 @@
             "resourceTexture": {
                 "name": "Output",
                 "editorPos": [
-                    8181.0,
-                    14597.0
-                ]
-            }
-        },
-        {
-            "actionComputeShader": {
-                "name": "VoxelWorldInitialize",
-                "editorPos": [
                     8165.0,
-                    14674.0
+                    14517.0
                 ],
-                "linkProperties": [
-                    {},
-                    {}
-                ],
-                "connections": [
-                    {
-                        "srcPin": "world",
-                        "dstNode": "World",
-                        "dstPin": "resource"
-                    }
-                ],
-                "shader": {
-                    "name": "VoxelWorldInitialize"
+                "visibility": "Exported",
+                "format": {
+                    "format": "RGBA8_Unorm_sRGB"
+                },
+                "size": {
+                    "multiply": [
+                        100,
+                        100,
+                        100
+                    ]
                 }
             }
         },
@@ -238,15 +266,12 @@
             "resourceTexture": {
                 "name": "World",
                 "editorPos": [
-                    7973.0,
-                    14629.0
+                    8155.0,
+                    14626.0
                 ],
-                "transient": false,
                 "visibility": "Imported",
-                "size": {
-                    "variable": {
-                        "name": "c_sizeOfWorld"
-                    }
+                "format": {
+                    "format": "RGBA8_Unorm_sRGB"
                 },
                 "dimension": "Texture3D"
             }

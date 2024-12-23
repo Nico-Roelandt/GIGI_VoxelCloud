@@ -16,9 +16,9 @@
     {
         for (int x = 0; x < 5; x++)
         {
-            for (int y = 0; y < 5; y++) 
+            for (int y = 0; y < 50; y++) 
             {
-                for (int z = 0; z < 5; z++)
+                for (int z = 0; z < 50; z++)
                 {
                     float3 position = float3(0.0f, 0.0f, 0.0f);
                     world[DTid.xyz] = float4(position, 0.0f);

@@ -1,51 +1,10 @@
 // Unnamed technique, shader PathTrace
 /*$(ShaderResources)*/
 
-// Fonction de hachage pour le RNG
-uint wang_hash(inout uint seed)
-{
-    seed = uint(seed ^ uint(61)) ^ uint(seed >> uint(16));
-    seed *= uint(9);
-    seed = seed ^ (seed >> 4);
-    seed *= uint(0x27d4eb2d); 
-    seed = seed ^ (seed >> 15);
-    return seed;
-}
-
-float RandomFloat01(inout uint state)
-{
-    return float(wang_hash(state)) / 4294967296.0;
-}
-
-
-// Fonction de ray marching
-float3 RayMarch(float3 rayOrigin, float3 rayDirection)
-{
-    float3 color = float3(0.0f, 0.0f, 0.0f);
-    float t = 0.0f;
-    for (int i = 0; i < 64; i++)
-    {
-        float3 p = rayOrigin + rayDirection * t;
-        float d = length(p) - 1.0f;
-        if (d < 0.001f)
-        {
-            color = float3(1.0f, 0.0f, 0.0f);
-            break;
-        }
-        t += d;
-    }
-    return color;
-}
-
-
 // Point d'entrée du shader
 /*$(_compute:csmain)*/(uint3 DTid : SV_DispatchThreadID)
 {
-    // Initialisation de l'état du générateur de nombres aléatoires
-    uint rngState = uint(uint(DTid.x) * uint(1973) + uint(DTid.y) * uint(9277) + uint(/*$(Variable:iFrame)*/) * uint(26699)) | uint(1);
-
-    // Ajout de jitter pour anti-crénelage
-    float2 fragCoordJittered = float2(DTid.xy) + (float2(RandomFloat01(rngState), RandomFloat01(rngState)) - 0.5f);
+    float2 fragCoordJittered = float2(DTid.xy);
 
     float3 rayOrigin;
     float3 rayDirection; 
@@ -61,13 +20,35 @@ float3 RayMarch(float3 rayOrigin, float3 rayDirection)
         world.xyz /= world.w;
 
         rayOrigin = /*$(Variable:CameraPos)*/;
-        rayDirection = normalize(world.xyz - rayOrigin);
+        rayDirection = normalize(world.xyz - rayOrigin); 
     }
 
     // Calcul de la couleur via ray marching
-    float3 color = RayMarch(rayOrigin, rayDirection);
+    float3 texCoord;
+    float3 color = float3(0.0f, 0.0f, 0.0f);
+    float accumulatedDensity = 0.0f; // Total accumulated density
+    for (int i = 0; i < 1000; i++) 
+    {
+        texCoord = rayOrigin * 0.5f + 0.5f; 
 
+        float4 sampledValue = world.SampleLevel(samplerLinear, texCoord, 0);
+        float density = sampledValue.r;
+        accumulatedDensity += density;
+
+        // Appliquer la densité pour influencer la couleur renvoyée
+        color += sampledValue.rgb * density; // Contribution en fonction de la densité
+
+        if (accumulatedDensity > 1.0f) {
+            break; 
+        } 
+
+        // Advance the ray position
+        rayOrigin += rayDirection * /*$(Variable:stepDistance)*/;
+    }
+
+    // Appliquer un ton final basé sur la densité accumulée
+    color = lerp(float3(0.8f, 0.8f, 0.8f), color, min(accumulatedDensity, 1.0f));
+    
     // Accumulation du résultat
     output[DTid.xy] = float4(color, 1.0f);
 }
- 
