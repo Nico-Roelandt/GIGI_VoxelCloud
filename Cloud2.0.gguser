@@ -1,0 +1,54 @@
+{
+    "version": "2.0",
+    "systemVars": {
+        "camera": {
+            "startingCameraPos": [
+                -200.0,
+                0.8624116778373718,
+                -13.215752601623536
+            ],
+            "startingCameraAltitudeAzimuth": [
+                0.5799444317817688,
+                5.446336269378662
+            ]
+        },
+        "ProjMtx_textureName": "Output"
+    },
+    "snapshot": {
+        "resourceViewNodeIndex": 0,
+        "resourceViewResourceIndex": 3,
+        "cameraPos": [
+            -202.4385986328125,
+            0.41750621795654299,
+            -13.468184471130371
+        ],
+        "cameraAltitudeAzimuth": [
+            -0.6308966279029846,
+            2.8566300868988039
+        ],
+        "importedResources": [
+            {
+                "nodeName": "World",
+                "texture": {
+                    "fileName": "voxel1.dds",
+                    "format": "BC7_Unorm_sRGB",
+                    "binaryFormat": "Any"
+                }
+            }
+        ],
+        "savedVariables": [
+            {
+                "name": "stepDistance",
+                "value": "1.000000"
+            },
+            {
+                "name": "cCloudWindOffset",
+                "value": "0.100000,0.100000"
+            },
+            {
+                "name": "voxel_cloud_animation_speed",
+                "value": "0.050000"
+            }
+        ]
+    }
+}

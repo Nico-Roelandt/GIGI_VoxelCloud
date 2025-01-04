@@ -1,0 +1,150 @@
+{
+    "$schema": "gigischema.json",
+    "version": "0.99b",
+    "variables": [
+        {
+            "name": "stepDistance",
+            "type": "Float",
+            "dflt": "0.1f",
+            "visibility": "User"
+        },
+        {
+            "name": "CameraPos",
+            "type": "Float3",
+            "dflt": "0.0f, 0.0f, 0.0f",
+            "visibility": "Host"
+        },
+        {
+            "name": "sizeOfWindow",
+            "type": "Float2",
+            "Const": true,
+            "dflt": "1080.0f, 720.0f",
+            "visibility": "Host"
+        },
+        {
+            "name": "InvViewProjMtx",
+            "type": "Float4x4",
+            "dflt": "1.0f, 0.0f, 0.0f, 0.0f,   0.0f, 1.0f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f, 0.0f,   0.0f, 0.0f, 0.0f, 1.0f",
+            "visibility": "Host"
+        },
+        {
+            "name": "cCloudWindOffset",
+            "type": "Float2",
+            "dflt": "0.1f, 0.1f",
+            "visibility": "User"
+        },
+        {
+            "name": "voxel_cloud_animation_speed",
+            "type": "Float",
+            "dflt": "0.05f",
+            "visibility": "User"
+        }
+    ],
+    "shaders": [
+        {
+            "name": "RaytraceDensity",
+            "fileName": "Shaders\\Cloud_PathTrace.hlsl",
+            "entryPoint": "csmain",
+            "resources": [
+                {
+                    "name": "output",
+                    "type": "Texture",
+                    "access": "UAV"
+                },
+                {
+                    "name": "world",
+                    "type": "Texture",
+                    "access": "SRV",
+                    "texture": {
+                        "dimension": "Texture3D"
+                    }
+                }
+            ],
+            "samplers": [
+                {
+                    "name": "samplerLinear",
+                    "addressMode": "Clamp"
+                }
+            ]
+        }
+    ],
+    "nodes": [
+        {
+            "actionComputeShader": {
+                "name": "RaytraceDensity",
+                "editorPos": [
+                    8619.0,
+                    14834.0
+                ],
+                "linkProperties": [
+                    {},
+                    {},
+                    {}
+                ],
+                "connections": [
+                    {
+                        "srcPin": "output",
+                        "dstNode": "Output",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "world",
+                        "dstNode": "World",
+                        "dstPin": "resource"
+                    }
+                ],
+                "shader": {
+                    "name": "RaytraceDensity"
+                },
+                "dispatchSize": {
+                    "node": {
+                        "name": "Output"
+                    }
+                },
+                "defines": [
+                    {
+                        "name": "EPSILON",
+                        "value": "1e-5f"
+                    }
+                ]
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "Output",
+                "editorPos": [
+                    8395.0,
+                    14770.0
+                ],
+                "visibility": "Exported",
+                "format": {
+                    "format": "RGBA8_Unorm_sRGB"
+                },
+                "size": {
+                    "variable": {
+                        "name": "sizeOfWindow"
+                    }
+                }
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "World",
+                "editorPos": [
+                    8363.0,
+                    14914.0
+                ],
+                "visibility": "Imported",
+                "format": {
+                    "format": "BC7_Unorm"
+                },
+                "size": {
+                    "node": {
+                        "name": "World"
+                    }
+                },
+                "dimension": "Texture3D"
+            }
+        }
+    ]
+}
