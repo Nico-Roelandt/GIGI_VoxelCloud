@@ -3,10 +3,9 @@
 
 // Définition des structures et constantes nécessaires
 struct CloudRenderingRaymarchInfo {
-    float mDistance; // Ajoutez d'autres champs si nécessaires
+    float mDistance;
 };
 
-Texture3D Cloud3DNoiseTextureC;
 SamplerState Cloud3DNoiseSamplerC;
 
 // Function: GetVoxelCloudMipLevel
@@ -34,26 +33,27 @@ float GetFractionFromValue(float value, float minRange, float maxRange)
 }
 
 //
-// Function to up-rez a Dimensional Profile NVDF using noise Detail Type and Density Scale NVDF’s
+// Function to up-rez a Dimensional Profile NVDF using noise Detail Type and Density Scale NVDF’s (BY ANUBIS)
 //
 float GetUprezzedVoxelCloudDensity(CloudRenderingRaymarchInfo inRaymarchInfo, float3 inSamplePosition, float inDimensionalProfile, float inType, float inDensityScale, float inMipLevel, bool inHFDetails)
 {
     // Apply wind offset  
     float2 cCloudWindOffset = /*$(Variable:cCloudWindOffset)*/;
-    inSamplePosition -= float3(cCloudWindOffset.x, cCloudWindOffset.y, 0.0) * /*$(Variable:voxel_cloud_animation_speed)*/;
+    //inSamplePosition -= float3(cCloudWindOffset.x, cCloudWindOffset.y, 0.0) * /*$(Variable:voxel_cloud_animation_speed)*/;
     
     // Sample noise
-    float mipmap_level = GetVoxelCloudMipLevel(inRaymarchInfo, inMipLevel);
-    float4 noise = Cloud3DNoiseTextureC.SampleLevel(Cloud3DNoiseSamplerC, inSamplePosition * 0.01, mipmap_level);
+    float3 uvw = inSamplePosition;
+    float3 noise = /*$(Image:voxel1.dds:BC7_Unorm_sRGB:float4:false)*/.SampleLevel(samplerLinear, uvw, 0);
      // Define wispy noise
-    float wispy_noise = lerp(noise.r, noise.g, inDimensionalProfile);
+    float wispy_noise = lerp(noise.x, noise.z, inDimensionalProfile);
      // Define billowy noise 
     float billowy_type_gradient = pow(inDimensionalProfile, 0.25);
-    float billowy_noise = lerp(noise.b * 0.3, noise.a * 0.3, billowy_type_gradient);
+    float billowy_noise = lerp(noise.x * 0.3, noise.y * 0.3, billowy_type_gradient);
      // Define Noise composite - blend to wispy as the density scale decreases.
     float noise_composite = lerp(wispy_noise, billowy_noise, inType);
+    
      // Get the hf noise which is to be applied nearby - First, get the distance from the sample to camera and only do the work within a distance of 150 meters. 
-    if (inHFDetails)
+    /*if (inHFDetails)
     {
         // Get the hf noise by folding the highest frequency billowy noise. 
         float hhf_noise = saturate(lerp(1.0 - pow(abs(abs(noise.g * 2.0 - 1.0) * 2.0 - 1.0), 4.0), pow(abs(abs(noise.a * 2.0 - 1.0) * 2.0 - 1.0), 2.0), inType));
@@ -61,7 +61,7 @@ float GetUprezzedVoxelCloudDensity(CloudRenderingRaymarchInfo inRaymarchInfo, fl
         // Apply the HF nosie near camera.
         float hhf_noise_distance_range_blender = ValueRemap(inRaymarchInfo.mDistance, 50.0, 150.0, 0.9, 1.0);
         noise_composite = lerp(hhf_noise, noise_composite, hhf_noise_distance_range_blender);
-    }
+    }*/
      // Composote Noises and use as a Value Erosion
     float uprezzed_density = ValueErosion(inDimensionalProfile, noise_composite);
      // Modify User density scale
@@ -76,10 +76,11 @@ float GetUprezzedVoxelCloudDensity(CloudRenderingRaymarchInfo inRaymarchInfo, fl
         float distance_range_blender = GetFractionFromValue(inRaymarchInfo.mDistance, 50.0, 150.0);
         uprezzed_density = pow(uprezzed_density, lerp(0.5, 1.0, distance_range_blender)) * lerp(0.666, 1.0, distance_range_blender);
     }
+    
      // Return result with softened edges
-    return uprezzed_density;
+    return noise_composite;
 }
-
+ 
 
  
 // Point d'entrée du shader
@@ -105,21 +106,21 @@ float GetUprezzedVoxelCloudDensity(CloudRenderingRaymarchInfo inRaymarchInfo, fl
     }
 
     // Initialisation des paramètres pour GetUprezzedVoxelCloudDensity
-    CloudRenderingRaymarchInfo raymarchInfo;
-    raymarchInfo.mDistance = length(rayOrigin - /*$(Variable:CameraPos)*/);
 
     float3 texCoord;
     float3 color = float3(0.2f, 0.3f, 1.0f);
     float accumulatedDensity = 0.0f;
     float stepSize =  /*$(Variable:stepDistance)*/;
     const float influenceFactor = 0.09f;
-
-    for (int i = 0; i < 3000; i++) 
+    float uprezzedDensity;
+    for (int i = 0; i < 3000; ++i)
     {
+        CloudRenderingRaymarchInfo raymarchInfo;
+        raymarchInfo.mDistance = length(rayOrigin - /*$(Variable:CameraPos)*/);
         texCoord = rayOrigin;
 
         // Appel à GetUprezzedVoxelCloudDensity pour calculer la densité améliorée
-        float uprezzedDensity = GetUprezzedVoxelCloudDensity(
+        uprezzedDensity = uprezzedDensity + GetUprezzedVoxelCloudDensity(
             raymarchInfo,
             texCoord,
             /* Profil dimensionnel */ 0.5f,
@@ -128,15 +129,18 @@ float GetUprezzedVoxelCloudDensity(CloudRenderingRaymarchInfo inRaymarchInfo, fl
             /* Niveau de mip */ 2.0f,
             /* Détails HF */ true
         );
-
         // Utilisation de la densité améliorée pour ajuster la couleur
         color = lerp(color, float3(1.0f, 1.0f, 1.0f), uprezzedDensity * influenceFactor);
 
-        // if (color.x == 1.0f && color.y == 1.0f && color.z == 1.0f)
-        // {
-        //     break;
-        // }
-
+        if (color.x == 1.0f && color.y == 1.0f && color.z == 1.0f)
+        {
+             break;
+        }
+        if (texCoord.x > 100 && texCoord.y > 100 && texCoord.z > 100)
+        {
+            break;
+        }
+        
         rayOrigin += rayDirection * stepSize;
     }
 

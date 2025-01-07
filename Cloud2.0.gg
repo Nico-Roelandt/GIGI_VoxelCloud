@@ -5,7 +5,7 @@
         {
             "name": "stepDistance",
             "type": "Float",
-            "dflt": "0.1f",
+            "dflt": "0.01f",
             "visibility": "User"
         },
         {

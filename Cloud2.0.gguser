@@ -3,9 +3,9 @@
     "systemVars": {
         "camera": {
             "startingCameraPos": [
-                -200.0,
-                0.8624116778373718,
-                -13.215752601623536
+                0.0,
+                0.0,
+                0.0
             ],
             "startingCameraAltitudeAzimuth": [
                 0.5799444317817688,
@@ -16,15 +16,15 @@
     },
     "snapshot": {
         "resourceViewNodeIndex": 0,
-        "resourceViewResourceIndex": 3,
+        "resourceViewResourceIndex": 4,
         "cameraPos": [
-            -202.4385986328125,
-            0.41750621795654299,
-            -13.468184471130371
+            1.0770914554595948,
+            2.8799357414245607,
+            -20.462656021118165
         ],
         "cameraAltitudeAzimuth": [
-            -0.6308966279029846,
-            2.8566300868988039
+            -0.10670213401317597,
+            3.1382803916931154
         ],
         "importedResources": [
             {
