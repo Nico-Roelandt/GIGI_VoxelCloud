@@ -16,21 +16,21 @@
     },
     "snapshot": {
         "resourceViewNodeIndex": 0,
-        "resourceViewResourceIndex": 4,
+        "resourceViewResourceIndex": 3,
         "cameraPos": [
-            1.0770914554595948,
-            2.8799357414245607,
-            -20.462656021118165
+            -13.509742736816407,
+            -14.965834617614746,
+            -9.907722473144532
         ],
         "cameraAltitudeAzimuth": [
-            -0.10670213401317597,
-            3.1382803916931154
+            1.8652842044830323,
+            4.2751264572143559
         ],
         "importedResources": [
             {
-                "nodeName": "World",
+                "nodeName": "density",
                 "texture": {
-                    "fileName": "voxel1.dds",
+                    "fileName": "textures\\outputNVIDIA2.dds",
                     "format": "BC7_Unorm_sRGB",
                     "binaryFormat": "Any"
                 }
@@ -39,7 +39,7 @@
         "savedVariables": [
             {
                 "name": "stepDistance",
-                "value": "1.000000"
+                "value": "0.010000"
             },
             {
                 "name": "cCloudWindOffset",
