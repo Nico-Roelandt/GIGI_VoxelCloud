@@ -69,7 +69,6 @@
         
         color = lerp(color, float3(1.0f, 1.0f, 1.0f), (uprezzedDensity) * influenceFactor);
   
-        noise[uint3(DTid.xy, mipmapLevel)] = float4(uprezzedDensity.xxx, 1.0);
 
  
         // if (color.x == 1.0f && color.y == 1.0f && color.z == 1.0f)

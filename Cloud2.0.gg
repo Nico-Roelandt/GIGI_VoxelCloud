@@ -186,7 +186,7 @@
                 {
                     "name": "density",
                     "type": "Texture",
-                    "access": "UAV",
+                    "access": "SRV",
                     "texture": {
                         "dimension": "Texture3D"
                     }
@@ -194,7 +194,7 @@
                 {
                     "name": "noise",
                     "type": "Texture",
-                    "access": "UAV",
+                    "access": "SRV",
                     "texture": {
                         "dimension": "Texture3D"
                     }
