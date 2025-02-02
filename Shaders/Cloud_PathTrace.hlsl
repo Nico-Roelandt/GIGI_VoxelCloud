@@ -1,7 +1,13 @@
 // Unnamed technique, shader PathTrace
 /*$(ShaderResources)*/
  
-// Point d'entrée du shader
+ float GetWispyNoise(float3 samplePos, float mipLevel) {
+    float lowFreqNoise = noise.SampleLevel(samplerNoise, samplePos, mipLevel).r;
+    float highFreqNoise = noise.SampleLevel(samplerNoise, samplePos, mipLevel).g;
+ 
+    return lerp(lowFreqNoise, highFreqNoise, lowFreqNoise);
+}
+
 /*$(_compute:csmain)*/(uint3 DTid : SV_DispatchThreadID)
 {
     float2 fragCoordJittered = float2(DTid.xy);
@@ -9,45 +15,65 @@
     float3 rayOrigin;
     float3 rayDirection;
 
-    // Obtenez les dimensions de l'image de sortie
     uint w, h;
     output.GetDimensions(w, h);
     float2 dimensions = float2(w, h);
 
-    // Coordonnées écran normalisées
     float2 screenPos = fragCoordJittered / dimensions * 2.0 - 1.0;
     screenPos.y = -screenPos.y;
 
-    // Reprojetez dans l'espace vue et monde
     float4 clipSpace = float4(screenPos, 0.0f, 1.0f);
     float4 viewSpace = mul(clipSpace, /*$(Variable:InvProjMtx)*/);
     viewSpace.xyz /= viewSpace.w;
 
     float4 worldSpace = mul(float4(viewSpace.xyz, 1.0f), /*$(Variable:InvViewMtx)*/);
-
-    // Initialise le rayon
+ 
     rayOrigin = /*$(Variable:CameraPos)*/;
     rayDirection = normalize(worldSpace.xyz - rayOrigin);
 
-    // Initialisation des paramètres pour GetUprezzedVoxelCloudDensity
 
     float3 texCoord;
     float3 color = float3(0.2f, 0.3f, 1.0f); 
     float accumulatedDensity = 0.0f;
+    float2 cCloudWindOffset = /*$(Variable:cCloudWindOffset)*/;
+    float cVoxelFineDetailMipMapDistanceScale = 1.0f;
+    float voxel_cloud_animation_speed = 2.0f;
     float stepSize =  /*$(Variable:stepDistance)*/;
     const float influenceFactor = 0.1f;
-
+    float mipmapLevel = 0;
+    float time = /*$(Variable:iTime)*/;
     for (int i = 0; i < 300; ++i)
     {
         texCoord = rayOrigin;
 
-        float3 uprezzedDensity = density.SampleLevel(samplerLinear, rayOrigin, 0);
-        // Utilisation de la densité améliorée pour ajuster la couleur
+        texCoord -= float3(cCloudWindOffset.x, cCloudWindOffset.y, 0.0) * voxel_cloud_animation_speed;
+
+        float phaseShift = sin(time) * 0.1 + cos(time); 
+        float2 windOffset = cCloudWindOffset * (time * 0.05 + phaseShift);
+
+        float3 distortion = noise.SampleLevel(samplerNoise, texCoord * 0.5, mipmapLevel).rgb * 0.1;
+        float3 texCoordAnimated = texCoord + float3(windOffset, 0.0) + distortion;
+
+        //float3 texCoordAnimated = texCoord + float3(windOffset, 0.0);
+
+        float4 noiseValue = noise.SampleLevel(samplerNoise, texCoordAnimated, mipmapLevel);
+        //float4 noiseValue = (1.0f, 1.0f, 1.0f, 1.0f);
+
+
+        float3 baseDensity = density.SampleLevel(samplerLinear, texCoord, 0);
+
+        float wispyFactor = GetWispyNoise(texCoordAnimated, mipmapLevel);
+        float uprezzedDensity = saturate(baseDensity * (0.8 + wispyFactor * 1)); 
+          
+        //float uprezzedDensity = saturate(baseDensity * (0.8 + noiseValue.r));
         
-        color = lerp(color, float3(1.0f, 1.0f, 1.0f), (uprezzedDensity.x + uprezzedDensity.y + uprezzedDensity.z) * influenceFactor);
+        color = lerp(color, float3(1.0f, 1.0f, 1.0f), (uprezzedDensity) * influenceFactor);
+  
+        noise[uint3(DTid.xy, mipmapLevel)] = float4(uprezzedDensity.xxx, 1.0);
+
  
         // if (color.x == 1.0f && color.y == 1.0f && color.z == 1.0f)
-        // {
+        // { 
         //      break;
         // }
         // if (texCoord.x > 100 && texCoord.y > 100 && texCoord.z > 100)
@@ -62,6 +88,5 @@
         // }
     } 
 
-    // Accumulation du résultat
     output[DTid.xy] = float4(color.xyz, 1.0f);
 }

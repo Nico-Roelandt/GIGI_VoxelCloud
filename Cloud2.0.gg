@@ -186,7 +186,15 @@
                 {
                     "name": "density",
                     "type": "Texture",
-                    "access": "SRV",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D"
+                    }
+                },
+                {
+                    "name": "noise",
+                    "type": "Texture",
+                    "access": "UAV",
                     "texture": {
                         "dimension": "Texture3D"
                     }
@@ -196,6 +204,9 @@
                 {
                     "name": "samplerLinear",
                     "addressMode": "Border"
+                },
+                {
+                    "name": "samplerNoise"
                 }
             ]
         }
@@ -211,6 +222,7 @@
                 "linkProperties": [
                     {},
                     {},
+                    {},
                     {}
                 ],
                 "connections": [
@@ -222,6 +234,11 @@
                     {
                         "srcPin": "density",
                         "dstNode": "density",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "noise",
+                        "dstNode": "noise",
                         "dstPin": "resource"
                     }
                 ],
@@ -265,6 +282,20 @@
                 "editorPos": [
                     8347.0,
                     14898.0
+                ],
+                "visibility": "Imported",
+                "format": {
+                    "format": "BC7_Unorm_sRGB"
+                },
+                "dimension": "Texture3D"
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "noise",
+                "editorPos": [
+                    8347.0,
+                    14978.0
                 ],
                 "visibility": "Imported",
                 "format": {
