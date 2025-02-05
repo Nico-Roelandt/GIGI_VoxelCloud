@@ -30,7 +30,7 @@
         {
             "name": "cCloudWindOffset",
             "type": "Float2",
-            "dflt": "0.1f, 0.1f",
+            "dflt": "0.0f, 0.0f",
             "visibility": "User"
         },
         {
@@ -170,6 +170,30 @@
             "type": "Float2",
             "dflt": "1.0f, 1.0f",
             "visibility": "Host"
+        },
+        {
+            "name": "timeStep",
+            "comment": "step of time for the density simulation",
+            "type": "Float",
+            "dflt": "0.1f",
+            "visibility": "User"
+        },
+        {
+            "name": "gridScale",
+            "comment": "size of velocity grid",
+            "type": "Float",
+            "dflt": "10.0f"
+        },
+        {
+            "name": "noiseScale",
+            "type": "Float",
+            "dflt": "100.0f"
+        },
+        {
+            "name": "windIntensity",
+            "type": "Float",
+            "dflt": "0.3f",
+            "visibility": "User"
         }
     ],
     "shaders": [
@@ -209,6 +233,76 @@
                     "name": "samplerNoise"
                 }
             ]
+        },
+        {
+            "name": "SimulateDensity",
+            "fileName": "Shaders\\Cloud_DensitySimulation.hlsl",
+            "entryPoint": "csmain",
+            "resources": [
+                {
+                    "name": "densityCompressed",
+                    "type": "Texture",
+                    "access": "SRV",
+                    "texture": {
+                        "dimension": "Texture3D"
+                    }
+                },
+                {
+                    "name": "densitySimulated",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D"
+                    }
+                },
+                {
+                    "name": "velocity",
+                    "type": "Texture",
+                    "access": "SRV",
+                    "texture": {
+                        "dimension": "Texture3D"
+                    }
+                }
+            ],
+            "samplers": [
+                {
+                    "name": "samplerLinear",
+                    "addressMode": "Border"
+                }
+            ]
+        },
+        {
+            "name": "SimulateVelocity",
+            "fileName": "Shaders\\Cloud_VelocityNoise.hlsl",
+            "entryPoint": "csmain",
+            "resources": [
+                {
+                    "name": "noise",
+                    "type": "Texture",
+                    "access": "SRV",
+                    "texture": {
+                        "dimension": "Texture3D"
+                    }
+                },
+                {
+                    "name": "velocity",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D"
+                    }
+                }
+            ],
+            "samplers": [
+                {
+                    "name": "samplerLinear",
+                    "addressMode": "Border"
+                },
+                {
+                    "name": "samplerNoise",
+                    "addressMode": "Clamp"
+                }
+            ]
         }
     ],
     "nodes": [
@@ -233,8 +327,8 @@
                     },
                     {
                         "srcPin": "density",
-                        "dstNode": "density",
-                        "dstPin": "resource"
+                        "dstNode": "SimulateDensity",
+                        "dstPin": "densitySimulated"
                     },
                     {
                         "srcPin": "noise",
@@ -262,7 +356,7 @@
             "resourceTexture": {
                 "name": "Output",
                 "editorPos": [
-                    8395.0,
+                    8443.0,
                     14770.0
                 ],
                 "visibility": "Exported",
@@ -278,10 +372,10 @@
         },
         {
             "resourceTexture": {
-                "name": "density",
+                "name": "densityCompressed",
                 "editorPos": [
-                    8347.0,
-                    14898.0
+                    8067.0,
+                    14786.0
                 ],
                 "visibility": "Imported",
                 "format": {
@@ -294,13 +388,135 @@
             "resourceTexture": {
                 "name": "noise",
                 "editorPos": [
-                    8347.0,
-                    14978.0
+                    8443.0,
+                    14962.0
                 ],
                 "visibility": "Imported",
                 "format": {
                     "format": "BC7_Unorm_sRGB"
                 },
+                "dimension": "Texture3D"
+            }
+        },
+        {
+            "actionComputeShader": {
+                "name": "SimulateDensity",
+                "editorPos": [
+                    8325.0,
+                    14831.0
+                ],
+                "linkProperties": [
+                    {},
+                    {},
+                    {},
+                    {}
+                ],
+                "connections": [
+                    {
+                        "srcPin": "densityCompressed",
+                        "dstNode": "densityCompressed",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "densitySimulated",
+                        "dstNode": "densitySimulated",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "velocity",
+                        "dstNode": "SimulateVelocity",
+                        "dstPin": "velocity"
+                    }
+                ],
+                "shader": {
+                    "name": "SimulateDensity"
+                },
+                "dispatchSize": {
+                    "node": {
+                        "name": "densityCompressed"
+                    }
+                }
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "densitySimulated",
+                "editorPos": [
+                    8080.0,
+                    14850.0
+                ],
+                "transient": false,
+                "format": {
+                    "format": "RGBA8_Unorm_sRGB"
+                },
+                "size": {
+                    "node": {
+                        "name": "densityCompressed"
+                    }
+                },
+                "dimension": "Texture3D"
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "velocity",
+                "editorPos": [
+                    7947.0,
+                    15042.0
+                ],
+                "format": {
+                    "format": "RGBA8_Unorm_sRGB"
+                },
+                "size": {
+                    "node": {
+                        "name": "densityCompressed"
+                    }
+                },
+                "dimension": "Texture3D"
+            }
+        },
+        {
+            "actionComputeShader": {
+                "name": "SimulateVelocity",
+                "editorPos": [
+                    8123.0,
+                    14946.0
+                ],
+                "linkProperties": [
+                    {},
+                    {},
+                    {}
+                ],
+                "connections": [
+                    {
+                        "srcPin": "noise",
+                        "dstNode": "noiseVelocity",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "velocity",
+                        "dstNode": "velocity",
+                        "dstPin": "resource"
+                    }
+                ],
+                "shader": {
+                    "name": "SimulateVelocity"
+                },
+                "dispatchSize": {
+                    "node": {
+                        "name": "densityCompressed"
+                    }
+                }
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "noiseVelocity",
+                "editorPos": [
+                    7942.0,
+                    14930.0
+                ],
+                "visibility": "Imported",
                 "dimension": "Texture3D"
             }
         }

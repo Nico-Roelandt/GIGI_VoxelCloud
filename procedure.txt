@@ -1,0 +1,4 @@
+Magica -> Texture
+Code python -> Divise les slices
+texassemble volume file/*.png -o testslice2.dds -> Assemble
+Nvidia texture tool -> Transforme de format

@@ -48,8 +48,8 @@
 
         texCoord -= float3(cCloudWindOffset.x, cCloudWindOffset.y, 0.0) * voxel_cloud_animation_speed;
 
-        float phaseShift = sin(time) * 0.1 + cos(time); 
-        float2 windOffset = cCloudWindOffset * (time * 0.05 + phaseShift);
+        float phaseShift = time * 10.0f; 
+        float2 windOffset = cCloudWindOffset * (time + phaseShift);
 
         float3 distortion = noise.SampleLevel(samplerNoise, texCoord * 0.5, mipmapLevel).rgb * 0.1;
         float3 texCoordAnimated = texCoord + float3(windOffset, 0.0) + distortion;
@@ -63,9 +63,9 @@
         float3 baseDensity = density.SampleLevel(samplerLinear, texCoord, 0);
 
         float wispyFactor = GetWispyNoise(texCoordAnimated, mipmapLevel);
-        float uprezzedDensity = saturate(baseDensity * (0.8 + wispyFactor * 1)); 
+        float uprezzedDensity = saturate(baseDensity * (0.8 + wispyFactor * 2)); 
           
-        //float uprezzedDensity = saturate(baseDensity * (0.8 + noiseValue.r));
+        //float uprezzedDensity = saturate(baseDensity * (0.8 + noiseValue.r)); old method
         
         color = lerp(color, float3(1.0f, 1.0f, 1.0f), (uprezzedDensity) * influenceFactor);
   

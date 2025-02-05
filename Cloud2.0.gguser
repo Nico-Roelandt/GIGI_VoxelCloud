@@ -8,8 +8,8 @@
                 0.0
             ],
             "startingCameraAltitudeAzimuth": [
-                0.5799444317817688,
-                5.446336269378662
+                1.31973135471344,
+                5.707330703735352
             ]
         },
         "ProjMtx_textureName": "Output"
@@ -18,17 +18,17 @@
         "resourceViewNodeIndex": 0,
         "resourceViewResourceIndex": 4,
         "cameraPos": [
-            0.22431133687496186,
-            1.598623275756836,
-            -0.12076578289270401
+            -1.0098021030426026,
+            1.9351613521575928,
+            -1.2005410194396973
         ],
         "cameraAltitudeAzimuth": [
-            0.8595014214515686,
-            5.79659366607666
+            -0.46549922227859499,
+            5.439637184143066
         ],
         "importedResources": [
             {
-                "nodeName": "density",
+                "nodeName": "densityCompressed",
                 "texture": {
                     "fileName": "textures\\outputNVIDIA2.dds",
                     "format": "BC7_Unorm_sRGB",
@@ -43,6 +43,14 @@
                     "format": "BC7_Unorm_sRGB",
                     "binaryFormat": "Any"
                 }
+            },
+            {
+                "nodeName": "noiseVelocity",
+                "texture": {
+                    "fileName": "textures\\noise1.dds",
+                    "format": "BC7_Unorm_sRGB",
+                    "binaryFormat": "Any"
+                }
             }
         ],
         "savedVariables": [
@@ -52,11 +60,27 @@
             },
             {
                 "name": "cCloudWindOffset",
-                "value": "0.010000,1.000000"
+                "value": "0.100000,0.100000"
             },
             {
                 "name": "voxel_cloud_animation_speed",
-                "value": "1.000000"
+                "value": "0.050000"
+            },
+            {
+                "name": "timeStep",
+                "value": "0.100000"
+            },
+            {
+                "name": "gridScale",
+                "value": "10.000000"
+            },
+            {
+                "name": "noiseScale",
+                "value": "100.000000"
+            },
+            {
+                "name": "windIntensity",
+                "value": "0.600000"
             }
         ]
     }
