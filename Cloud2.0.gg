@@ -194,6 +194,12 @@
             "type": "Float",
             "dflt": "0.3f",
             "visibility": "User"
+        },
+        {
+            "name": "densityInfluence",
+            "type": "Float",
+            "dflt": "0.1f",
+            "visibility": "User"
         }
     ],
     "shaders": [

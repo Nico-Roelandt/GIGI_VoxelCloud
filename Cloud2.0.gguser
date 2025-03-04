@@ -3,13 +3,13 @@
     "systemVars": {
         "camera": {
             "startingCameraPos": [
-                0.0,
-                0.0,
-                0.0
+                0.27697575092315676,
+                0.18783974647521974,
+                0.05507737398147583
             ],
             "startingCameraAltitudeAzimuth": [
-                1.31973135471344,
-                5.707330703735352
+                0.5500854253768921,
+                5.50998067855835
             ]
         },
         "ProjMtx_textureName": "Output"
@@ -18,19 +18,19 @@
         "resourceViewNodeIndex": 0,
         "resourceViewResourceIndex": 4,
         "cameraPos": [
-            -1.0098021030426026,
-            1.9351613521575928,
-            -1.2005410194396973
+            0.06451074779033661,
+            -0.06832641363143921,
+            -0.16263313591480256
         ],
         "cameraAltitudeAzimuth": [
-            -0.46549922227859499,
-            5.439637184143066
+            0.699884295463562,
+            5.50998067855835
         ],
         "importedResources": [
             {
                 "nodeName": "densityCompressed",
                 "texture": {
-                    "fileName": "textures\\outputNVIDIA2.dds",
+                    "fileName": "textures\\assembleFile_compressed.dds",
                     "format": "BC7_Unorm_sRGB",
                     "binaryFormat": "Any"
                 }
@@ -80,7 +80,11 @@
             },
             {
                 "name": "windIntensity",
-                "value": "0.600000"
+                "value": "1.000000"
+            },
+            {
+                "name": "densityInfluence",
+                "value": "1.000000"
             }
         ]
     }

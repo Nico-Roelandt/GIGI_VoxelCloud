@@ -33,23 +33,24 @@
 
 
     float3 texCoord;
-    float3 color = float3(0.2f, 0.3f, 1.0f); 
+    float3 color = float3(0.2f, 0.3f, 1.0f);
     float accumulatedDensity = 0.0f;
     float2 cCloudWindOffset = /*$(Variable:cCloudWindOffset)*/;
     float cVoxelFineDetailMipMapDistanceScale = 1.0f;
     float voxel_cloud_animation_speed = 2.0f;
     float stepSize =  /*$(Variable:stepDistance)*/;
-    const float influenceFactor = 0.1f;
+    const float influenceFactor = /*$(Variable:densityInfluence)*/;
     float mipmapLevel = 0;
     float time = /*$(Variable:iTime)*/;
     for (int i = 0; i < 300; ++i)
     {
         texCoord = rayOrigin;
 
+        // Si je veux move mes nuages faire ici
         texCoord -= float3(cCloudWindOffset.x, cCloudWindOffset.y, 0.0) * voxel_cloud_animation_speed;
 
-        float phaseShift = time * 10.0f; 
-        float2 windOffset = cCloudWindOffset * (time + phaseShift);
+        float phaseShift = 0.5f; 
+        float2 windOffset = time * phaseShift;
 
         float3 distortion = noise.SampleLevel(samplerNoise, texCoord * 0.5, mipmapLevel).rgb * 0.1;
         float3 texCoordAnimated = texCoord + float3(windOffset, 0.0) + distortion;
@@ -60,16 +61,13 @@
         //float4 noiseValue = (1.0f, 1.0f, 1.0f, 1.0f);
 
 
-        float3 baseDensity = density.SampleLevel(samplerLinear, texCoord, 0);
-
+        float4 baseDensity = density.SampleLevel(samplerLinear, texCoord, 0);
         float wispyFactor = GetWispyNoise(texCoordAnimated, mipmapLevel);
-        float uprezzedDensity = saturate(baseDensity * (0.8 + wispyFactor * 2)); 
+        float uprezzedDensity = saturate(baseDensity.r * (0.8 + wispyFactor * 2)); 
           
         //float uprezzedDensity = saturate(baseDensity * (0.8 + noiseValue.r)); old method
         
-        color = lerp(color, float3(1.0f, 1.0f, 1.0f), (uprezzedDensity) * influenceFactor);
-  
-
+        color = lerp(color, float3(1.0f, 1.0f, 1.0f), (uprezzedDensity.r) * influenceFactor);
  
         // if (color.x == 1.0f && color.y == 1.0f && color.z == 1.0f)
         // { 
