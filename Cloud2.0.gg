@@ -209,6 +209,149 @@
                     "name": "samplerNoise"
                 }
             ]
+        },
+        {
+            "name": "InitsFields",
+            "fileName": "Shaders\\InitFields.hlsl",
+            "entryPoint": "CS",
+            "NumThreads": [
+                8,
+                8,
+                8
+            ],
+            "resources": [
+                {
+                    "name": "Th",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D",
+                        "viewType": "Float"
+                    }
+                },
+                {
+                    "name": "QV",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D",
+                        "viewType": "Float"
+                    }
+                },
+                {
+                    "name": "QC",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D",
+                        "viewType": "Float"
+                    }
+                },
+                {
+                    "name": "QR",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D",
+                        "viewType": "Float"
+                    }
+                },
+                {
+                    "name": "Ux",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D",
+                        "viewType": "Float"
+                    }
+                },
+                {
+                    "name": "Uv",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D",
+                        "viewType": "Float"
+                    }
+                },
+                {
+                    "name": "Uz",
+                    "type": "Texture",
+                    "access": "UAV",
+                    "texture": {
+                        "dimension": "Texture3D",
+                        "viewType": "Float"
+                    }
+                },
+                {
+                    "name": "SimParams",
+                    "type": "Buffer",
+                    "access": "UAV",
+                    "buffer": {
+                        "typeStruct": {
+                            "name": "SimParams"
+                        }
+                    },
+                    "texture": {
+                        "dimension": "Texture3D",
+                        "viewType": "Float"
+                    }
+                }
+            ]
+        }
+    ],
+    "structs": [
+        {
+            "name": "SimParams",
+            "fields": [
+                {
+                    "name": "gridSize",
+                    "type": "Uint3",
+                    "dflt": "(12800, 12800, 12800)",
+                    "comment": "(Nx, Ny, Nz)"
+                },
+                {
+                    "name": "cellSize",
+                    "type": "Float3",
+                    "dflt": "(256, 256, 256)",
+                    "comment": "(dx, dy, dz)"
+                },
+                {
+                    "name": "timeStep",
+                    "type": "Float",
+                    "comment": "no use of dt"
+                },
+                {
+                    "name": "zTop",
+                    "type": "Float",
+                    "comment": "high of area"
+                },
+                {
+                    "name": "thetaSurface",
+                    "type": "Float",
+                    "dflt": "300",
+                    "comment": "temperature on surface "
+                },
+                {
+                    "name": "dThetaDz",
+                    "type": "Float",
+                    "dflt": "0.003"
+                },
+                {
+                    "name": "qvSurface",
+                    "type": "Float",
+                    "dflt": "0.014"
+                },
+                {
+                    "name": "dQvDz",
+                    "type": "Float",
+                    "dflt": "0.0000025"
+                },
+                {
+                    "name": "randSeed",
+                    "type": "Uint"
+                }
+            ]
         }
     ],
     "nodes": [
@@ -219,6 +362,9 @@
                     8619.0,
                     14834.0
                 ],
+                "condition": {
+                    "alwaysFalse": true
+                },
                 "linkProperties": [
                     {},
                     {},
@@ -302,6 +448,174 @@
                     "format": "BC7_Unorm_sRGB"
                 },
                 "dimension": "Texture3D"
+            }
+        },
+        {
+            "actionComputeShader": {
+                "name": "InitFields",
+                "editorPos": [
+                    8639.0,
+                    15219.0
+                ],
+                "linkProperties": [
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {}
+                ],
+                "connections": [
+                    {
+                        "srcPin": "SimParams",
+                        "dstNode": "SimParams",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "Th",
+                        "dstNode": "TH",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "QV",
+                        "dstNode": "QV",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "QC",
+                        "dstNode": "QC",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "QR",
+                        "dstNode": "QR",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "Ux",
+                        "dstNode": "Ux",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "Uv",
+                        "dstNode": "Uv",
+                        "dstPin": "resource"
+                    },
+                    {
+                        "srcPin": "Uz",
+                        "dstNode": "Uz",
+                        "dstPin": "resource"
+                    }
+                ],
+                "shader": {
+                    "name": "InitsFields"
+                }
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "TH",
+                "editorPos": [
+                    8367.0,
+                    15178.0
+                ],
+                "format": {
+                    "format": "R32_Float"
+                },
+                "dimension": "Texture3D"
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "QV",
+                "editorPos": [
+                    8357.0,
+                    15237.0
+                ],
+                "format": {
+                    "format": "R16_Float"
+                },
+                "dimension": "Texture3D"
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "QC",
+                "editorPos": [
+                    8357.0,
+                    15301.0
+                ],
+                "format": {
+                    "format": "R16_Float"
+                },
+                "dimension": "Texture3D"
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "QR",
+                "editorPos": [
+                    8341.0,
+                    15365.0
+                ],
+                "format": {
+                    "format": "R16_Float"
+                },
+                "dimension": "Texture3D"
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "Ux",
+                "editorPos": [
+                    8341.0,
+                    15429.0
+                ],
+                "format": {
+                    "format": "R32_Float"
+                }
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "Uv",
+                "editorPos": [
+                    8341.0,
+                    15493.0
+                ],
+                "format": {
+                    "format": "R32_Float"
+                }
+            }
+        },
+        {
+            "resourceTexture": {
+                "name": "Uz",
+                "editorPos": [
+                    8341.0,
+                    15541.0
+                ],
+                "format": {
+                    "format": "R32_Float"
+                }
+            }
+        },
+        {
+            "resourceBuffer": {
+                "name": "SimParams",
+                "editorPos": [
+                    8325.0,
+                    15605.0
+                ],
+                "visibility": "Exported",
+                "format": {
+                    "structureType": {
+                        "name": "SimParams"
+                    }
+                }
             }
         }
     ]
